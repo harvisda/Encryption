@@ -1,0 +1,36 @@
+"""
+Encrypt or decrypt the contents of a message file using a deck of cards.
+"""
+
+import cipher_functions
+
+
+DECK_FILENAME = 'deck1.txt'
+MSG_FILENAME = 'message-decrypted.txt'
+MODE = 'e'  # 'e' for encryption, 'd' for decryption.
+
+
+def main(DECK_FILENAME, MSG_FILENAME, MODE):
+    """ (list of int, list of str, str) -> NoneType
+    
+    Perform the encryption using the deck from a file called DECK_FILENAME and
+    the messages from a file called MSG_FILENAME. If MODE is 'e', encrypt;
+    otherwise, decrypt. Print the decrypted message to the screen.
+    """    
+    # Create a list to hold the file infomation
+    message_list = cipher_functions.read_messages(MSG_FILENAME)
+
+    # Create a list to hold the deck data 
+    card_deck = cipher_functions.read_deck(DECK_FILENAME)
+    # print (card_deck)
+    # Use the covert_message to either encrypt or decrypt the infomation 
+    coverted_message = cipher_functions.process_messages(card_deck, 
+                                                    message_list, MODE)
+    print(coverted_message)
+
+    return(coverted_message)
+
+# Calling the main function
+scrambled = main('deck1.txt','message-decrypted.txt','e')
+main('deck1.txt','message-decrypted.txt','e')
+main('deck1.txt',scrambled,'d')
