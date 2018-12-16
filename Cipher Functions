@@ -1,0 +1,429 @@
+"""
+Cipher functions for encryption and decryption 
+Cipher key is constructed from a deck of cards with values 27 and 28 being 'Joker' values 
+
+"""
+
+
+# The values of the two jokers.
+JOKER1 = 27
+JOKER2 = 28
+#### This list will be used later on in several function 
+# Contains the capitalized letter of the alphabet in alphabetical order  
+alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+                'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+                'Y', 'Z']
+
+# Functions for running an encryption or decryption.
+
+def encrypt_letter(character, keystream_value):
+    """
+        (str, int) -> str
+        Convert the given character into an encrypted letter using the keystream 
+        value and then return that encrypted letter
+        >>> encrypt_letter('R', 4)
+        'V'
+        >>> encrypt_letter('z', 11)
+        'K'
+    """    
+    # Convert any lower case letter to uppercase
+    if character.islower():
+        character = character.upper()      
+        
+    # Create a varible to hold the index (location) of letter in comparison to 
+    # the location od the letter in the alphabet 
+    letter_index = alphabet.index(character)  
+    
+    # Find the value of the encryted letter by adding index of given letter and 
+    # key stream value 
+    encrypted_letter = letter_index + keystream_value  
+    
+    # Check if the encrypted_letter has numerical value greater than 26
+    # if it does the reduce the encrypted_letter until it is under 26 
+    if encrypted_letter >= 26:
+        # Find remainder of the encrypted_letter divided by a mutiple of 26
+        encrypted_letter = encrypted_letter % 26
+    return alphabet[encrypted_letter]
+
+
+def decrypt_letter(encrypted_letter, keystream_value):
+    """
+        (str, int) -> str
+        Decrypt the letter using the encrypted letter and the keystream value. 
+        take the encrypted letter and subtract the keystream value to find the 
+        decrypted value. Ensure that the decrypted letter has an index that falls 
+        inbetween 0 and 26. then Return the decrypted letter 
+        >>> decrypt_letter('R', 4)
+        'N'
+        >>> decrypt_letter('A', 9)
+        'R'
+    """    
+    # Find the index (location) of the given letter 
+    encrypted_index = alphabet.index(encrypted_letter)
+    
+    # Create a new varible to store the decrytped index value and find the  
+    # the value by subtracting the keystream_index 
+    
+    decrypted_letter_value = encrypted_index - keystream_value
+    # If decrypted_letter_value has index less than 0 then covert it so 
+    # it's that the value in inbetween 0 and 26 
+    if (decrypted_letter_value <= 0):
+        # Find remainder which corresponds with index
+        decrypted_letter_value = decrypted_letter_value % 26
+    # Return the letter corresponding with index
+    
+    return alphabet[decrypted_letter_value]
+
+
+# Write your functions here:
+
+def clean_message(message):
+    """
+        (str) -> str
+        Return a copy of the input with only capitalized letters. Delete all 
+        characters other then letters in the alphebet and then capitalize each 
+        letter 
+        REQ: input should not be longer then 1 line
+        >>> clean_message("This is just a test")
+        'THISISJUSTATEST'
+        
+        >>> clean_message("TeSt with other characters: !@#$%")
+        'TESTWITHOTHERCHARACTERS'
+"""     
+    # create a varible to hold the new message 
+    new_message = ''     
+    # Loop through each characters in message
+    for character in message:
+    # Check if the character is a alphabetical letter if so then capitilize it
+        if character.isalpha():
+            character = character.upper()
+            # Add each capitilized letter into the new message
+            new_message = new_message + character
+    return new_message
+
+
+def swap_cards(card_deck, index):
+    """
+        (list of int, int) -> NoneType
+        Given a list of numbers swap the the cards in fornt of the index with 
+        card behind the index. return nothing
+        REQ: index > 0 
+        >>> deck = [1, 2, 3, 4, 5]
+        >>> swap_cards(deck, 0)
+        >>> deck == [2, 1, 3, 5, 4]
+        True
+        >>> deck = [1, 2, 3, 4, 5]
+        >>> swap_cards(deck, 4)
+        >>> deck == [5, 2, 3, 4, 1]
+        True
+"""     
+    # Create copy of the deck
+    deck_copy = card_deck[:]
+    # If the given card_index is last card of deck
+    if index == (len(card_deck) - 1):
+        # Swap last card with first card
+        card_deck[index] = deck_copy[0]
+        card_deck[0] = deck_copy[index]      
+    # If the card is not the last card in the deck then it has to be swapped 
+    # with the card behind it 
+    else:
+        card_deck[index] = deck_copy[index + 1]
+        card_deck[index + 1] = deck_copy[index]     
+
+
+def move_joker_1(card_deck):
+    """
+        (list of int) -> NoneType
+        Given a the deck list locate joker_1 and move it one position up while 
+        moving the value 
+        >>> deck = [1, 4, 7, 10, 13, 27, 2, 5, 8, 11, 14] 
+        >>> move_joker_1(card_deck)
+        >>> deck == [1, 4, 7, 10, 13, 2, 27, 5, 8, 11, 14] 
+        True    
+        >>> deck = [1, 4, 7, 10, 13, 14, 2, 5, 8, 11, 27] 
+        >>> move_joker_1(card_deck)
+        >>> deck == [27, 4, 7, 10, 13, 2, 14, 5, 8, 11, 1] 
+        True
+"""     
+    # assign a varible find the index (location) of the joker_1
+    joker_1 = card_deck.index(JOKER1)
+    # Recall function 'swap_cards' to move the joker use the index of the 
+    # joker_1 as the second varible. 
+    swap_cards(card_deck,joker_1)    
+    
+    
+def move_joker_2(card_deck):
+    """
+        (list of int) -> NoneType
+        Given a the deck list locate joker_1 and move it one position up while 
+        moving the value 
+        >>> deck = [1, 4, 7, 10, 13, 27, 2, 5, 8, 11, 14] 
+        >>> move_joker_1(card_deck)
+        >>> deck == [1, 4, 7, 10, 13, 2, 27, 5, 8, 11, 14] 
+        True    
+        >>> deck = [1, 4, 7, 10, 13, 14, 2, 5, 8, 11, 27] 
+        >>> move_joker_1(card_deck)
+        >>> deck == [27, 4, 7, 10, 13, 2, 14, 5, 8, 11, 1]
+        True
+"""     
+    # find the location of the joker_2
+    joker_2 = card_deck.index(JOKER2)
+    # Recall function 'swap_cards' to move the joker use the index of the 
+    # joker_2 as the second varible. 
+    swap_cards(card_deck,joker_2)    
+    # recalculate the location of joker_2 and use the swap function to move the 
+    # joker_2 again 
+    joker_2 = card_deck.index(JOKER2)
+    swap_cards(card_deck,joker_2)  
+
+
+def triple_cut(card_deck):
+    """ 
+        (list of int) -> NoneType
+        replace the cards below the first joker with the cards above the second 
+        joker then replace the cards above the second joker with the cards below 
+        the first joker
+        >>> deck = [1, 4, 7, 10, 13, 16, 19, 28, 2, 27, 5, 8]
+        >>> triple_cut(deck)
+        >>> deck == [5, 8, 28, 2, 27, 1, 4, 7, 10, 13, 16, 19]
+        True
+        >>> deck = [1, 2, 3, 4, 28, 2, 27]
+        >>> triple_cut(deck)
+        >>> deck == [28, 2, 27,1 ,2 ,3 ,4]
+        True
+    """    
+    # find the index of the both jokers 
+    joker_2 = card_deck.index(JOKER2)
+    joker_1 = card_deck.index(JOKER1)
+    # create a temporary list to store the values of the 2 jokers 
+    templist = [joker_2, joker_1]
+    # sort the list so that the lower indexed joker is first 
+    templist.sort(key=int) 
+
+    # create a new deck to store the changes in the the triple cut 
+    # use list splicing to cut and piece together a new deck 
+    update_deck = card_deck[(templist[1]+1):]
+    update_deck = update_deck + card_deck[(templist[0]):(templist[1]+1)]   
+    update_deck = update_deck + card_deck[0:(templist[0])] 
+
+    # update the card_deck by coverting it into the updated_deck
+    card_deck.clear()
+    card_deck.extend(update_deck[0:])
+
+
+def insert_top_to_bottom(card_deck):
+    """    
+        (list of int) -> NoneType 
+        Find the face value of the last card in the deck. Then starting from the 
+        very first card move the a number of cards corresponding to the face value 
+        of the last card inbetween the last 2 cards. If the last card is the joker_2 
+        change the value into joker_1 (27) 
+        >>>card_deck = [1,2,5,4,5,3]
+        >>>insert_top_to_bottom(card_deck)
+        >>>deck == [4, 5, 1, 2, 5, 3]
+        True
+        >>>card_deck = [4,4,5,4,4,0]
+        >>>insert_top_to_bottom(card_deck)
+        >>>[4,4,5,4,4,0]
+        True 
+"""     
+    # create a new varible to store the face value of the last card 
+    last_card = card_deck[-1]
+    # check if the last card is the joker_2 if so then replace the value with  
+    # the joker_1 (27) 
+    if last_card == JOKER2: 
+        last_card = JOKER1     
+    # create a temporary list and start appending the parts of the orginal deck 
+    # into the updated list 
+    update_deck = card_deck[last_card:len(card_deck)-1] 
+    update_deck = update_deck + card_deck[0:last_card] 
+    update_deck.append(card_deck[-1])
+    # update the card_deck by coverting it into the updated_deck
+    card_deck.clear()
+    card_deck.extend(update_deck[0:])   
+    
+    
+def get_card_at_top_index(card_deck):
+    """    
+        (list of int) -> NoneType 
+        Find the face value of the first card in the deck. If the last card is 
+        joker_2 (28) change the value into joker_1 (27). return the value of the 
+        card
+        >>>card_deck = [1,2,5,4,5,3]
+        >>>get_card_at_top_index(card_deck)
+        1 
+        >>>card_deck = [28,4,5,4,4,0]
+        >>>get_card_at_top_index(card_deck)
+        27
+"""     
+    # create a new varible to store the face value of the first card 
+    first_card = card_deck[0]
+    # check if the first card is the joker_2 (28) if so then replace the value 
+    # with the joker_1 (27) 
+    if first_card == JOKER2: 
+        first_card = JOKER1 
+    return first_card 
+
+        
+        
+def get_next_value(card_deck):
+    '''
+        (list of int) -> int
+        Using the encryption function (move_joker_1, move_joker_2, triple_cut, 
+        insert_top_to_bottom) to modify the deck list and then use the 
+        get_card_at_top_index function to find a possible keystream value for the  
+        function 
+        >>> card_deck = [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 3, 6, 9, 12, 15, 18,
+                         21, 24, 27, 2, 5, 8, 11, 14, 17, 20, 23, 26]
+        >>> get_next_value(card_deck)
+        23
+        >>> get_next_value([1, 2, 3, 27, 4, 8, 9, 28])
+        1
+    '''    
+    # Step 1
+    move_joker_1(card_deck)
+    # Step 2 
+    move_joker_2(card_deck)
+    # Step 3 
+    triple_cut(card_deck)
+    # Step 4 
+    insert_top_to_bottom(card_deck)
+    # Step 5 - calculated the potential keystream value
+    return (get_card_at_top_index(card_deck)) 
+
+
+def get_next_keystream_value(card_deck):
+    '''
+        (list of int) -> int
+        Find a acceptable keystream_value that is between 0 and 26. Use the 
+        get_next_value function in order to find the potential keystream value and  
+        then determine if it is acceptable. If not repeat the get_next_value 
+        function until it is within the range 
+        >>> card_deck = [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 3, 6, 9, 12, 15, 18,
+                         21, 24, 27, 2, 5, 8, 11, 14, 17, 20, 23, 26]
+        >>> get_next_keystream_value(card_deck)
+        23
+        >>> get_next_keystream_value([90, 99, 99, 27, 9, 9, 99, 99, 28])
+        9
+    '''    
+    # create a new varible that hold the value of a potential keystream value 
+    keystream_value = get_next_value(card_deck)
+    # create a loop that ensure that the keystream_value is below 26 
+    while keystream_value >= 26: 
+        keystream_value = get_next_value(card_deck)
+    #return the keystream value 
+    return (keystream_value)
+    
+    
+def process_message(card_deck, message, task):
+    """            
+       (list of int, str, str) -> str
+       REQ: task = 'e' or task = 'd'
+       The function should either encrypt or decrypt the message based on the 
+       whether the 3rd string is 'd' meaning decrypt and 'e' should encrypt the 
+       message    
+       >>>process_message([1,27,1,1,28,1], 'ab', 'e')
+       BC
+       >>>process_message([1,27,1,1,28,1], 'ab', 'd')
+       ZA
+    """         
+    
+    # Covert the message into a single line of all caps no spaces 
+    update_message = clean_message(message)
+    # Create a new varible to hold the encrypted or decrypted message 
+    changed_message = ''       
+    # Determine wether the the message should be encrypted or decrypted 
+    
+    # Case 1: the message should be encrypted 
+    if task == 'e': 
+        # create a loop to run though each letter of the message 
+        for letter in update_message: 
+            # find the keystream value
+            keystream_value = get_next_keystream_value(card_deck)
+            encryp_letter = encrypt_letter(letter, keystream_value)
+            # add the new encrypted letter into the encrypted message 
+            changed_message = (changed_message + encryp_letter)   
+            
+    
+    # Case 2: the message should be decrypted 
+    elif task == 'd': 
+        # Create a varible that should hold the decrypted message 
+        decrypted_message = ''
+        # create a loop to run though each letter of the message 
+        for letter in update_message:
+            # find the keystream value of the decrypted letter in the message 
+            keystream_value = get_next_keystream_value(card_deck)
+            decryp_letter = decrypt_letter(letter, keystream_value) 
+            # add the new decrypted letter into the changed message 
+            changed_message = (changed_message + decryp_letter)  
+    return changed_message
+    
+
+def process_messages(card_deck, message_list, task):
+    """
+        (list of int, str, str) -> str 
+        given a list of strings (messages) encrypt or decrypt the messages and 
+        return a list that contains the encrypt or decrypt messages
+        REQ: task = 'e' or task = 'd'
+        >>> process_messages([1,27,1,1,28,1], ['ab','bc','cd'], 'e')
+        ['BC', 'CD', 'DE']
+        >>>process_messages([1,27,1,1,28,1], ['ab','bc','cd'], 'd')
+        ['ZA', 'AB', 'BC']
+    """    
+    # Create a new varible to hold the encrypted or decrypted messages
+    new_message_list = []
+    # Create a loop that runs though each message in the message list 
+    for message in message_list:
+        # Encrypt or decrypt each message in message_list
+        message = process_message(card_deck, message, task)
+        # Appened the new encrypted or decrypted messages into new_message list
+        new_message_list.append(message)
+        
+    return new_message_list
+
+
+def read_messages(file_name):
+    """
+       (file open for reading) -> list of str
+       Create a copy of the messages stored in each line of the text file and store 
+       the data in a list
+    """    
+    file_handler = open(file_name,'r')
+    # Create a list to holf the file's data (messages)
+    file_data = []
+    # Read the content of the file
+    read_message = file_handler.readlines()
+
+    # create a loop that checks each line of the file and stores the data into 
+    # the file_data list
+    for next_line in read_message:
+        file_data = file_data + [next_line.strip()]
+        
+    file_handler.close()
+    return file_data
+
+def read_deck(file_name):
+    """
+       (file open for reading) -> list of int
+       Create a single line copy of the decklist stored in file of the text file 
+       and store the data in a list
+    """    
+    file_handler = open(file_name,'r')
+    # Create a list to holf the file's data (messages)
+    file_data = []
+    # Read the content of the file
+    read_message = file_handler.readlines()
+
+    # create a loop that checks each line of the file and stores the data into 
+    # the file_data list
+    for next_line in read_message:
+        # Covert each indivdual list into 1 combined list to hold the file 
+        # information 
+        for number in [next_line.rstrip().split()]:
+            pos=0
+            while pos < len(number):
+                file_data.append(int(number[pos]))
+                pos += 1
+        
+    file_handler.close()
+    return file_data
